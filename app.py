@@ -162,3 +162,60 @@ if not filtered_data.empty:
 
 else:
     st.info("Select different filters to view the analysis.")
+# Key Findings
+st.divider()
+st.header("Key Findings")
+
+if not filtered_data.empty:
+
+    gender_rates = (
+        filtered_data.groupby("sex")["survived"].mean() * 100
+    )
+
+    class_rates = (
+        filtered_data.groupby("pclass")["survived"].mean() * 100
+    )
+
+    if not gender_rates.empty:
+        top_gender = gender_rates.idxmax()
+        st.write(
+            f"- **Gender:** {top_gender.title()} passengers "
+            f"had the highest survival rate "
+            f"({gender_rates.max():.1f}%)."
+        )
+
+    if not class_rates.empty:
+        top_class = class_rates.idxmax()
+        st.write(
+            f"- **Passenger class:** Class {top_class} "
+            f"had the highest survival rate "
+            f"({class_rates.max():.1f}%)."
+        )
+
+    age_rates = (
+        chart_data.groupby("age_group", observed=False)["survived"]
+        .mean().dropna() * 100
+    )
+
+    if not age_rates.empty:
+        top_age_group = age_rates.idxmax()
+        st.write(
+            f"- **Age group:** {top_age_group} passengers "
+            f"had the highest survival rate "
+            f"({age_rates.max():.1f}%)."
+        )
+
+# Limitations
+st.divider()
+st.header("Limitations")
+
+st.markdown("""
+- The analysis describes associations, not proof of causation.
+- Some passenger information was missing in the original dataset.
+- The results describe the passengers in this dataset and may not
+  represent every person aboard the Titanic.
+- Survival patterns may have been influenced by factors not included
+  in this analysis.
+""")
+
+st.caption("Project: Titanic Exploratory Data Analysis | Python, Pandas, Streamlit and Plotly")
