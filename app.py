@@ -84,3 +84,81 @@ if not filtered_data.empty:
 
 else:
     st.warning("No passengers match the selected filters.")
+
+# Exploratory Data Analysis
+st.divider()
+st.header("Survival Analysis")
+
+if not filtered_data.empty:
+
+    # Create age groups for analysis
+    chart_data = filtered_data.copy()
+
+    chart_data["age_group"] = pd.cut(
+        chart_data["age"],
+        bins=[0, 12, 18, 35, 60, 100],
+        labels=["Child", "Teenager", "Young Adult", "Adult", "Senior"]
+    )
+
+    # Survival by gender
+    st.subheader("1. Survival by Gender")
+
+    gender_survival = (
+        chart_data.groupby("sex", observed=False)["survived"]
+        .mean().reset_index()
+    )
+    gender_survival["survived"] *= 100
+
+    fig1 = px.bar(
+        gender_survival,
+        x="sex",
+        y="survived",
+        color="sex",
+        text_auto=".1f",
+        title="Survival Rate by Gender",
+        labels={"sex": "Gender", "survived": "Survival Rate (%)"}
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+
+    # Survival by passenger class
+    st.subheader("2. Survival by Passenger Class")
+
+    class_survival = (
+        chart_data.groupby("pclass", observed=False)["survived"]
+        .mean().reset_index()
+    )
+    class_survival["survived"] *= 100
+
+    fig2 = px.bar(
+        class_survival,
+        x="pclass",
+        y="survived",
+        color="pclass",
+        text_auto=".1f",
+        title="Survival Rate by Passenger Class",
+        labels={"pclass": "Passenger Class", "survived": "Survival Rate (%)"}
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    # Survival by age group
+    st.subheader("3. Survival by Age Group")
+
+    age_survival = (
+        chart_data.groupby("age_group", observed=False)["survived"]
+        .mean().reset_index()
+    )
+    age_survival["survived"] *= 100
+
+    fig3 = px.bar(
+        age_survival,
+        x="age_group",
+        y="survived",
+        color="age_group",
+        text_auto=".1f",
+        title="Survival Rate by Age Group",
+        labels={"age_group": "Age Group", "survived": "Survival Rate (%)"}
+    )
+    st.plotly_chart(fig3, use_container_width=True)
+
+else:
+    st.info("Select different filters to view the analysis.")
